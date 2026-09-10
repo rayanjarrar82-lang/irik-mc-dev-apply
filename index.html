@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRIK MC Server Dev Apply</title>
+    <style>
+        *{box-sizing:border-box}
+        body{margin:0;min-height:100vh;font-family:Arial,sans-serif;color:#fff;background:radial-gradient(circle at 20% 10%,rgba(80,30,180,.25),transparent 35%),radial-gradient(circle at 80% 80%,rgba(0,100,255,.20),transparent 35%),#050509;display:flex;justify-content:center;align-items:center;padding:25px}
+        .form-container{width:100%;max-width:650px;padding:32px;border:1px solid rgba(92,80,255,.35);border-radius:18px;background:rgba(12,12,22,.94);box-shadow:0 0 35px rgba(70,30,180,.25)}
+        h1{text-align:center;margin:0 0 8px;font-size:28px;background:linear-gradient(90deg,#2388ff,#9b4dff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .subtitle{text-align:center;color:#aaaabd;margin-bottom:25px}
+        label{display:block;margin:17px 0 7px;font-weight:bold}
+        input,select,textarea{width:100%;padding:12px 13px;border-radius:9px;border:1px solid #292944;outline:none;background:#090912;color:#fff;font-size:15px}
+        input:focus,select:focus,textarea:focus{border-color:#694cff;box-shadow:0 0 0 3px rgba(105,76,255,.12)}
+        textarea{min-height:110px;resize:vertical}
+        .server-title{margin-top:28px;margin-bottom:12px;color:#b9a9ff;font-size:18px;font-weight:bold}
+        .server-box{display:flex;gap:8px;margin-top:9px}
+        .server-box input{direction:ltr;text-align:left}
+        .copy-btn{width:90px;border:0;border-radius:9px;background:linear-gradient(135deg,#176cff,#763cff);color:#fff;font-weight:bold;cursor:pointer}
+        .copy-btn:hover{filter:brightness(1.15)}
+        .submit-btn{width:100%;padding:14px;margin-top:25px;border:0;border-radius:10px;background:linear-gradient(90deg,#176cff,#793cff);color:#fff;font-size:16px;font-weight:bold;cursor:pointer}
+        .submit-btn:disabled{opacity:.6;cursor:wait}
+        .status{margin-top:15px;text-align:center;min-height:20px;color:#bdbdca}
+        .required{color:#9b4dff}
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <h1>IRIK MC Server Dev Apply</h1>
+    <div class="subtitle">نموذج التقديم لفريق التطوير في سيرفر IRIK MC</div>
+
+    <form id="applyForm">
+        <label for="name">اسمك <span class="required">*</span></label>
+        <input type="text" id="name" required placeholder="مثال: ريان">
+
+        <label for="discord">يوزر الديسكورد <span class="required">*</span></label>
+        <input type="text" id="discord" required placeholder="مثال: rayanjarra53_765">
+
+        <label for="age">عمرك <span class="required">*</span></label>
+        <input type="number" id="age" required min="10" max="99" placeholder="مثال: 20">
+
+        <label for="field">مجالك <span class="required">*</span></label>
+        <select id="field" required>
+            <option value="" disabled selected>اختر مجالك</option>
+            <option>ديسكورد</option>
+            <option>ماينكرافت</option>
+            <option>ديسكورد / ماينكرافت</option>
+        </select>
+
+        <label for="experience">خبراتك <span class="required">*</span></label>
+        <textarea id="experience" required placeholder="اكتب خبراتك ومهاراتك بالتفصيل..."></textarea>
+
+        <label for="servers">هل عملت في سيرفرات من قبل؟ اذكرها <span class="required">*</span></label>
+        <textarea id="servers" required placeholder="اذكر أسماء السيرفرات والمهام التي كنت تقوم بها..."></textarea>
+
+        <label for="files">إذا عندك ملفات من أعمالك أرسلها</label>
+        <input type="url" id="files" placeholder="رابط Google Drive / MediaFire / GitHub">
+
+        <div class="server-title">معلومات سيرفر IRIK MC</div>
+
+        <label>Java Edition</label>
+        <div class="server-box">
+            <input type="text" id="java_ip" value="irikmc.plmc.fun" readonly onclick="this.select()">
+            <button type="button" class="copy-btn" onclick="copyText('java_ip',this)">نسخ IP</button>
+        </div>
+
+        <label>Bedrock Edition - IP</label>
+        <div class="server-box">
+            <input type="text" id="bedrock_ip" value="irikmc.plmc.fun" readonly onclick="this.select()">
+            <button type="button" class="copy-btn" onclick="copyText('bedrock_ip',this)">نسخ IP</button>
+        </div>
+
+        <label>Bedrock Edition - Port</label>
+        <div class="server-box">
+            <input type="text" id="bedrock_port" value="30067" readonly onclick="this.select()">
+            <button type="button" class="copy-btn" onclick="copyText('bedrock_port',this)">نسخ Port</button>
+        </div>
+
+        <button class="submit-btn" id="submitBtn" type="submit">إرسال طلب التقديم</button>
+        <div class="status" id="status"></div>
+    </form>
+</div>
+
+<script>
+    // بعد إنشاء Cloudflare Worker، ضع رابط الـ Worker هنا.
+    const WORKER_URL = "ضع_رابط_Cloudflare_Worker_هنا";
+
+    async function copyText(id, button){
+        const input=document.getElementById(id);
+        try {
+            await navigator.clipboard.writeText(input.value);
+        } catch (e) {
+            input.select();
+            document.execCommand("copy");
+        }
+        const old=button.textContent;
+        button.textContent="تم النسخ ✓";
+        setTimeout(()=>button.textContent=old,1500);
+    }
+
+    document.getElementById("applyForm").addEventListener("submit", async (e)=>{
+        e.preventDefault();
+        const status=document.getElementById("status");
+        const btn=document.getElementById("submitBtn");
+
+        if(WORKER_URL.includes("ضع_رابط")){
+            status.textContent="لم يتم ربط نظام استقبال الطلبات بعد.";
+            return;
+        }
+
+        btn.disabled=true;
+        status.textContent="جاري إرسال الطلب...";
+
+        const data={
+            name:document.getElementById("name").value.trim(),
+            discord:document.getElementById("discord").value.trim(),
+            age:document.getElementById("age").value,
+            field:document.getElementById("field").value,
+            experience:document.getElementById("experience").value.trim(),
+            servers:document.getElementById("servers").value.trim(),
+            files:document.getElementById("files").value.trim()
+        };
+
+        try{
+            const response=await fetch(WORKER_URL,{
+                method:"POST",
+                headers:{"Content-Type":"application/json"},
+                body:JSON.stringify(data)
+            });
+            const result=await response.json().catch(()=>({}));
+            if(!response.ok) throw new Error(result.error||"failed");
+            status.textContent="تم إرسال طلبك بنجاح ✅";
+            e.target.reset();
+        }catch(err){
+            status.textContent="حدث خطأ أثناء الإرسال. حاول مرة أخرى.";
+        }finally{
+            btn.disabled=false;
+        }
+    });
+</script>
+</body>
+</html>
